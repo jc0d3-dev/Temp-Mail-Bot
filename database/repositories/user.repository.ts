@@ -5,7 +5,7 @@ const inMemoryStorage = new Map<number, any>();
 
 export const UserRepository = {
   async findOrCreate(userId: number): Promise<any> {
-    if (USE_DB) {
+    if (USE_DB && usersCollection) {
       let user = await usersCollection.findOne({ user_id: userId });
       if (!user) {
         await usersCollection.insertOne({
@@ -22,19 +22,19 @@ export const UserRepository = {
   },
 
   async updateUser(userId: number, data: object): Promise<void> {
-    if (USE_DB) {
+    if (USE_DB && usersCollection) {
       await usersCollection.updateOne(
         { user_id: userId },
         { $set: data }
       );
     } else {
-      const current = inMemoryStorage.get(userId) || {};
+      const current = inMemoryStorage.get(userId) || { user_id: userId };
       inMemoryStorage.set(userId, { ...current, ...data });
     }
   },
 
   async countUsers(): Promise<number> {
-    if (USE_DB) return await usersCollection.countDocuments();
+    if (USE_DB && usersCollection) return await usersCollection.countDocuments();
     return inMemoryStorage.size;
   }
 };
