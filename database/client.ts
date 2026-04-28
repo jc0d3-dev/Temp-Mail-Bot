@@ -10,8 +10,8 @@ if (USE_DB) {
     console.log("✅ MongoDB connected");
     db = client.database("temp_mail_bot");
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error);
-    Deno.exit(1);
+    console.error("⚠️ MongoDB connection failed, continuing without DB:", error.message);
+    // Kita ndak pake Deno.exit(1) supaya bot tetap jalan
   }
 }
 
