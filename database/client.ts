@@ -1,18 +1,20 @@
-import { MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts";
+import { MongoClient, Collection } from "npm:mongodb";
 import { MONGO_URI, USE_DB } from "../config/config.ts";
+
 let client: MongoClient | null = null;
 let db: any = null;
+let usersCollection: Collection | undefined = undefined;
 
 if (USE_DB) {
-  client = new MongoClient();
   try {
-    await client.connect(MONGO_URI!);
-    console.log("✅ MongoDB connected");
-    db = client.database("temp_mail_bot");
-  } catch (error) {
-    console.error("⚠️ MongoDB connection failed, continuing without DB:", error.message);
-    // Kita ndak pake Deno.exit(1) supaya bot tetap jalan
+    client = new MongoClient(MONGO_URI!);
+    await client.connect();
+    console.log("✅ MongoDB connected (using npm:mongodb)");
+    db = client.db("temp_mail_bot");
+    usersCollection = db.collection("users");
+  } catch (error: any) {
+    console.error("⚠️ MongoDB connection failed:", error.message);
   }
 }
 
-export const usersCollection = db?.collection("users");
+export { usersCollection };
